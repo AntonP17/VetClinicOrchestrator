@@ -40,11 +40,8 @@ public class Orchestrator {
     private String doctorTopic;
     @Value("${kafka.topic.analytics}")
     private String analyticsTopic;
-    @Value("${kafka.topic.comand.delete.client}")
+    @Value("${kafka.topic.comand.delete}")
     private String deleteClientStatusTopic;
-    @Value("${kafka.topic.comand.delete.doctor}")
-    private String deleteDoctorStatusTopic;
-
 
     // начало цепочки принимаем сообщение нового визита
     @Transactional
@@ -137,36 +134,10 @@ public class Orchestrator {
 
     }
 
-    // не найден врач
-//    @KafkaListener(
-//            topics = "${kafka.topic.doctor.exception}",
-//            groupId = "${kafka.group.response}"
-//    )
-//    public void listenDoctorException(String messageexception) {
-//
-//        ExceptionNotFoundDto exceptionNotFoundDto = objectMapper.readValue(messageexception, ExceptionNotFoundDto.class);
-//        log.error("Received exception: {}", exceptionNotFoundDto.errorMessage());
-//
-//        log.info("try send message to Visits");
-//        kafkaTemplate.send(deleteDoctorStatusTopic, messageexception);
-//        log.info("Successful send message to deleteDoctorStatusTopic");
-//
-//        log.info("try send messege Analitic");
-//        VisitStatusEventDto visitStatusEventDto = VisitStatusEventDto.builder()
-//                .visitId(exceptionNotFoundDto.visitId())
-//                .status(Status.FAILED)
-//                .comment(exceptionNotFoundDto.errorMessage())
-//                .build();
-//
-//        String jsonAnalitics = objectMapper.writeValueAsString(visitStatusEventDto);
-//        kafkaTemplate.send(analyticsTopic, exceptionNotFoundDto.visitId().toString(), jsonAnalitics);
-//        log.info("sucesses send message Analitic: {}", jsonAnalitics);
-//    }
-
-    // не найден клиент
+    // не найден клиент или врач
     @SneakyThrows
     @KafkaListener(
-            topics = "${kafka.topic.clients.exception}",
+            topics = "${kafka.topic.exceptions}",
             groupId = "${kafka.group.response}",
             containerFactory = "orchestratorKafkaListenerContainerFactory"
     )
@@ -229,7 +200,7 @@ public class Orchestrator {
 
     // найден врач
     @KafkaListener(
-            topics = "${kafka.topic.three}",
+            topics = "${kafka.topic.successful.doctor.response}",
             groupId = "${kafka.group.response}",
             containerFactory = "orchestratorKafkaListenerContainerFactory"
     )
