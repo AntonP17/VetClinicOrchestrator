@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: migration/changelog/v1__create_schema.sql
+  - include:
+      file: migration/changelog/v2__create_table_outbox.sql
